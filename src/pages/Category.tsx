@@ -3,15 +3,15 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import NavBar from "@/components/ui/navbar";
 import Footer from "@/components/Footer";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Slider } from "@/components/ui/slider";
-import { Separator } from "@/components/ui/separator";
-import { ChevronRight, SlidersHorizontal, X } from "lucide-react";
+import { Product, Filter } from "@/types/product";
+import ProductGrid from "@/components/category/ProductGrid";
+import FilterSection from "@/components/category/FilterSection";
+import MobileFilters from "@/components/category/MobileFilters";
+import CategoryBreadcrumbs from "@/components/category/CategoryBreadcrumbs";
+import CategoryHeader from "@/components/category/CategoryHeader";
 
 // Имитация данных продуктов
-const products = [
+const products: Product[] = [
   {
     id: 1,
     name: "KAESER SK 22",
@@ -65,7 +65,7 @@ const products = [
   }
 ];
 
-const filters = [
+const filters: Filter[] = [
   {
     name: "Серия",
     options: ["SK", "SM", "ASK", "BSD", "CSD", "ESD"]
@@ -102,181 +102,35 @@ const Category = () => {
       <NavBar />
       <div className="pt-20 bg-gray-50">
         {/* Хлебные крошки */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center text-sm text-gray-500">
-            <a href="/" className="hover:text-blue-600">Главная</a>
-            <ChevronRight className="h-4 w-4 mx-2" />
-            <a href="/catalog" className="hover:text-blue-600">Каталог</a>
-            <ChevronRight className="h-4 w-4 mx-2" />
-            <span className="font-medium text-gray-900">{getBreadcrumbTitle()}</span>
-          </div>
-        </div>
+        <CategoryBreadcrumbs categoryName={categoryName} />
 
         {/* Заголовок категории */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">{getBreadcrumbTitle()}</h1>
-          <p className="mt-2 text-gray-600 max-w-4xl">
-            Винтовые компрессоры KAESER — это надежные и энергоэффективные системы для подачи сжатого воздуха, 
-            идеально подходящие для промышленного применения. Широкий модельный ряд позволяет выбрать оптимальное 
-            решение для любых задач.
-          </p>
-        </div>
+        <CategoryHeader title={getBreadcrumbTitle()} />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
           <div className="lg:grid lg:grid-cols-4 lg:gap-x-8">
             {/* Мобильные фильтры */}
-            <Button 
-              variant="outline" 
-              className="flex items-center lg:hidden w-full mb-4"
-              onClick={() => setMobileFiltersOpen(true)}
-            >
-              <SlidersHorizontal className="h-4 w-4 mr-2" />
-              Фильтры
-            </Button>
-
-            {/* Мобильный слайдаут с фильтрами */}
-            {mobileFiltersOpen && (
-              <div className="fixed inset-0 flex z-40 lg:hidden">
-                <div className="fixed inset-0 bg-black bg-opacity-25" onClick={() => setMobileFiltersOpen(false)} />
-                <div className="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-white py-4 pb-12 shadow-xl">
-                  <div className="flex items-center justify-between px-4">
-                    <h2 className="text-lg font-medium text-gray-900">Фильтры</h2>
-                    <button
-                      type="button"
-                      className="-mr-2 flex h-10 w-10 items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100"
-                      onClick={() => setMobileFiltersOpen(false)}
-                    >
-                      <X className="h-6 w-6" />
-                    </button>
-                  </div>
-
-                  <div className="mt-4 px-4">
-                    <div className="space-y-6">
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-900">Цена</h3>
-                        <div className="mt-4">
-                          <Slider 
-                            defaultValue={[0, 100]} 
-                            max={100} 
-                            step={1} 
-                            value={priceRange}
-                            onValueChange={handlePriceChange}
-                            className="mt-2" 
-                          />
-                          <div className="mt-2 flex justify-between text-xs text-gray-500">
-                            <span>от {(priceRange[0] * 100000).toLocaleString()} ₽</span>
-                            <span>до {(priceRange[1] * 100000).toLocaleString()} ₽</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {filters.map((section) => (
-                        <div key={section.name}>
-                          <h3 className="text-sm font-medium text-gray-900">{section.name}</h3>
-                          <div className="mt-2 space-y-2">
-                            {section.options.map((option) => (
-                              <div key={option} className="flex items-center">
-                                <Checkbox id={`mobile-${section.name}-${option}`} />
-                                <label htmlFor={`mobile-${section.name}-${option}`} className="ml-3 text-sm text-gray-600">
-                                  {option}
-                                </label>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            <MobileFilters 
+              isOpen={mobileFiltersOpen}
+              onOpen={() => setMobileFiltersOpen(true)} 
+              onClose={() => setMobileFiltersOpen(false)}
+              filters={filters}
+              priceRange={priceRange}
+              onPriceChange={handlePriceChange}
+            />
 
             {/* Десктопные фильтры */}
             <div className="hidden lg:block">
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Фильтры</h3>
-                
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">Цена</h3>
-                    <div className="mt-4">
-                      <Slider 
-                        defaultValue={[0, 100]} 
-                        max={100} 
-                        step={1} 
-                        value={priceRange}
-                        onValueChange={handlePriceChange}
-                        className="mt-2" 
-                      />
-                      <div className="mt-2 flex justify-between text-xs text-gray-500">
-                        <span>от {(priceRange[0] * 100000).toLocaleString()} ₽</span>
-                        <span>до {(priceRange[1] * 100000).toLocaleString()} ₽</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {filters.map((section) => (
-                    <div key={section.name}>
-                      <Separator className="my-4" />
-                      <h3 className="text-sm font-medium text-gray-900">{section.name}</h3>
-                      <div className="mt-2 space-y-2">
-                        {section.options.map((option) => (
-                          <div key={option} className="flex items-center">
-                            <Checkbox id={`${section.name}-${option}`} />
-                            <label htmlFor={`${section.name}-${option}`} className="ml-3 text-sm text-gray-600">
-                              {option}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                <div className="mt-6 space-y-2">
-                  <Button className="w-full">Применить</Button>
-                  <Button variant="outline" className="w-full">Сбросить</Button>
-                </div>
-              </div>
+              <FilterSection 
+                filters={filters}
+                priceRange={priceRange}
+                onPriceChange={handlePriceChange}
+              />
             </div>
 
             {/* Список продуктов */}
             <div className="mt-6 lg:col-span-3 lg:mt-0">
-              <div className="grid grid-cols-1 gap-y-8 gap-x-6 sm:grid-cols-2 lg:grid-cols-3">
-                {products.map((product) => (
-                  <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
-                    <div className="relative bg-gray-200 aspect-square overflow-hidden">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                      />
-                      {product.tags && product.tags.length > 0 && (
-                        <div className="absolute top-2 left-2 flex flex-wrap gap-1">
-                          {product.tags.includes('популярный') && (
-                            <span className="bg-orange-500 text-white px-2 py-1 text-xs font-medium rounded-md">Популярный</span>
-                          )}
-                          {product.tags.includes('акция') && (
-                            <span className="bg-red-500 text-white px-2 py-1 text-xs font-medium rounded-md">Акция</span>
-                          )}
-                          {product.tags.includes('новинка') && (
-                            <span className="bg-green-500 text-white px-2 py-1 text-xs font-medium rounded-md">Новинка</span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                    <CardContent className="p-4 flex-grow flex flex-col">
-                      <div className="text-xs text-gray-500 mb-1">{product.category}</div>
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">{product.name}</h3>
-                      <p className="text-sm text-gray-600 mb-4 flex-grow">{product.description}</p>
-                      <div className="mt-2 flex items-end justify-between">
-                        <div className="text-lg font-bold text-gray-900">{product.price}</div>
-                        <Button size="sm">Подробнее</Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <ProductGrid products={products} />
             </div>
           </div>
         </div>
