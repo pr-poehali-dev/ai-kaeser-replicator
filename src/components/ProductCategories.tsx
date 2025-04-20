@@ -2,6 +2,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const categories = [
   {
@@ -9,18 +10,21 @@ const categories = [
     title: "Винтовые компрессоры",
     description: "Энергоэффективные решения для подачи сжатого воздуха",
     image: "/placeholder.svg",
+    slug: "vintovye-kompressory"
   },
   {
     id: 2,
     title: "Поршневые компрессоры",
     description: "Надежность и производительность для малых предприятий",
     image: "/placeholder.svg",
+    slug: "porshnevye-kompressory"
   },
   {
     id: 3,
     title: "Осушители воздуха",
     description: "Системы очистки и подготовки сжатого воздуха",
     image: "/placeholder.svg",
+    slug: "osushiteli-vozduha"
   },
 ];
 
@@ -48,19 +52,23 @@ const ProductCategories = () => {
               <CardContent className="p-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">{category.title}</h3>
                 <p className="text-gray-600 mb-4">{category.description}</p>
-                <Button variant="ghost" className="group text-blue-600 hover:text-blue-800 p-0">
-                  Подробнее
-                  <ChevronRight className="ml-2 h-4 w-4 transform transition-transform group-hover:translate-x-1" />
-                </Button>
+                <Link to={`/category/${category.slug}`}>
+                  <Button variant="ghost" className="group text-blue-600 hover:text-blue-800 p-0">
+                    Подробнее
+                    <ChevronRight className="ml-2 h-4 w-4 transform transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           ))}
         </div>
         
         <div className="mt-12 text-center">
-          <Button className="px-6 py-3 bg-blue-600 hover:bg-blue-700">
-            Смотреть весь каталог
-          </Button>
+          <Link to="/catalog">
+            <Button className="px-6 py-3 bg-blue-600 hover:bg-blue-700">
+              Смотреть весь каталог
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
